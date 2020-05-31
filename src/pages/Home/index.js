@@ -7,6 +7,8 @@ import * as S from "./styled";
 export default function Home() {
   const history = useHistory();
   const [usuario, setUsuario] = useState("");
+  const [erro, setErro] = useState(false);
+
   function handlePesquisa() {
     axios
       .get(`https://api.github.com/users/${usuario}/repos`)
@@ -20,20 +22,33 @@ export default function Home() {
           "repositoriesName",
           JSON.stringify(repositoriesName)
         );
+        setErro(false);
         history.push("/repositories");
+      })
+      .catch((err) => {
+        setErro(true);
       });
   }
+
   return (
-    <S.Container>
-      <S.Input
-        className="usuarioInput"
-        placeholder="usuario"
-        value={usuario}
-        onChange={(e) => setUsuario(e.target.value)}
-      />
-      <S.Button type="button" onClick={handlePesquisa}>
-        Pesquisar
-      </S.Button>
-    </S.Container>
+    <S.HomeContainer>
+      <S.Content>
+        <S.Input
+          className="usuarioInput"
+          placeholder="usuario"
+          value={usuario}
+          onChange={(e) => setUsuario(e.target.value)}
+        />
+        <S.Button type="button" onClick={handlePesquisa}>
+          Pesquisar
+        </S.Button>
+      </S.Content>
+
+      {erro ? (
+        <S.ErrorMsg>Usuário não existe, tente novamente.</S.ErrorMsg>
+      ) : (
+        ""
+      )}
+    </S.HomeContainer>
   );
 }
